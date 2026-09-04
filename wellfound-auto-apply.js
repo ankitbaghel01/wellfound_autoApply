@@ -192,6 +192,145 @@ ${CV.name}`;
     return null;
   }
 
+  // ======================= PLAYWRIGHT BRIDGE =======================
+  // The injected script cannot perform real browser-level clicks that React
+  // reliably processes. Instead we signal Playwright to perform the actual click.
+  // Playwright polls window.__applyBtnSelector and uses locator.click().
+
+  function signalPlaywrightReady(button) {
+    // Build a robust selector for the button: prefer scoped data-testid, fall back
+    // to a CSS path within the modal scope.
+    let selector = null;
+    if (button.getAttribute('data-testid')) {
+      selector = `[data-testid="${button.getAttribute('data-testid')}"]`;
+    } else if (button.id) {
+      selector = `#${button.id}`;
+    } else {
+      // Walk up to the modal scope and build a path
+      const modal = button.closest('[role="dialog"], [class*="modal" i], [class*="Modal"]');
+      if (modal) {
+        // Find all sibling buttons and determine index
+        const modalBtns = [...modal.querySelectorAll('button, [type="submit"]')];
+        const idx = modalBtns.indexOf(button);
+        if (idx >= 0) {
+          selector = `__wfModalBtn:${idx}`;
+        }
+      }
+      if (!selector) {
+        // Last resort: text-based selector within modal
+        const text = button.textContent.trim().toLowerCase().replace(/\s+/g, ' ');
+        selector = `__wfTextBtn:${text}`;
+      }
+    }
+    window.__applyBtnSelector = selector;
+    window.__applyReady = true;
+    log('  🔗 Playwright bridge armed, selector: ' + selector);
+  }
+
+  async function waitForPlaywrightClick(timeoutMs = 20000) {
+    // Poll until Playwright sets window.__applyClicked = true
+    const end = Date.now() + timeoutMs;
+    while (Date.now() < end) {
+      if (window.__applyClicked) {
+        window.__applyClicked = false; // consume the signal
+        window.__applyReady = false;
+        window.__applyBtnSelector = null;
+        return true;
+      }
+      await sleep(200);
+    }
+    return false;
+  }
+
+  async function verifySubmission(scope, timeoutMs = 15000) {
+    // Wait for strong evidence that Wellfound accepted the application.
+    // Returns { success, reason, evidence }.
+    const start = Date.now();
+    const initialUrl = location.href;
+
+    while (Date.now() - start < timeoutMs) {
+      // Signal 1: Apply modal/panel has closed
+      const modalStillOpen = [...document.querySelectorAll('[role="dialog"], [class*="modal" i], [class*="Modal"]')]
+        .some((d) => /apply to /i.test(d.textContent) && d.querySelector('textarea'));
+      if (!modalStillOpen) {
+        return { success: true, reason: 'modal_closed', evidence: 'Application panel closed after submission' };
+      }
+
+      // Signal 2: Button text changed from "Apply" to "Applied" or similar
+      const btnStill = [...scope.querySelectorAll('button, [type="submit"]')]
+        .find((b) => /applied|submitted|sent/i.test(b.textContent.trim()));
+      if (btnStill) {
+        return { success: true, reason: 'button_changed', evidence: 'Button text: ' + btnStill.textContent.trim() };
+      }
+
+      // Signal 3: Success toast / confirmation element appeared
+      const toast = document.querySelector('[class*="toast" i], [class*="Toast" i], [role="alert"], [class*="success" i], [class*="notification" i]');
+      if (toast && /applied|submitted|success|thank/i.test(toast.textContent)) {
+        return { success: true, reason: 'success_toast', evidence: toast.textContent.trim().slice(0, 80) };
+      }
+
+      // Signal 4: URL changed (some flows redirect after application)
+      if (location.href !== initialUrl) {
+        return { success: true, reason: 'url_changed', evidence: 'URL changed to: ' + location.href };
+      }
+
+      await sleep(500);
+    }
+
+    // Timed out — no positive signal detected
+    return { success: false, reason: 'no_confirmation', evidence: 'No success signal detected within ' + timeoutMs + 'ms' };
+  }
+
+  // Improved button finder with diagnostics
+  // Prefers submit-type buttons, then buttons in the lower portion of the modal,
+  // then the largest matching button (submit buttons are typically wider than job-card buttons).
+  function findFinalApplyButton(scope) {
+    const SEND_PATTERN = /^apply$|^send$|submit|send application/i;
+    const allBtns = [...scope.querySelectorAll('button, a[role="button"], [type="submit"]')];
+    const candidates = allBtns.filter((b) => {
+      const text = b.textContent.trim();
+      return visible(b) && SEND_PATTERN.test(text);
+    });
+
+    // Log diagnostics for all candidates
+    for (const b of candidates) {
+      const rect = b.getBoundingClientRect();
+      log(`  [debug] candidate button: "${b.textContent.trim()}" disabled=${b.disabled} ` +
+          `type=${b.type || 'n/a'} rect=${Math.round(rect.width)}x${Math.round(rect.height)} at (${Math.round(rect.x)},${Math.round(rect.y)})`);
+    }
+
+    if (!candidates.length) return null;
+
+    // Prefer submit-type buttons (strongest signal)
+    const submitBtn = candidates.find((b) => b.type === 'submit');
+    if (submitBtn) {
+      const rect = submitBtn.getBoundingClientRect();
+      log(`  [Wellfound] Final Apply button found (submit-type): "${submitBtn.textContent.trim()}"`);
+      log(`  [Wellfound] disabled: ${submitBtn.disabled}, bounding box: ${Math.round(rect.width)}x${Math.round(rect.height)}`);
+      return submitBtn;
+    }
+
+    // Among non-submit buttons, prefer the LARGEST one (submit buttons are typically wider
+    // than the small job-card "Apply" buttons which are ~65px wide)
+    let best = null;
+    let bestArea = 0;
+    for (const b of candidates) {
+      const rect = b.getBoundingClientRect();
+      const area = rect.width * rect.height;
+      if (area > bestArea) {
+        bestArea = area;
+        best = b;
+      }
+    }
+
+    if (best) {
+      const rect = best.getBoundingClientRect();
+      log(`  [Wellfound] Final Apply button found (largest): "${best.textContent.trim()}"`);
+      log(`  [Wellfound] disabled: ${best.disabled}, bounding box: ${Math.round(rect.width)}x${Math.round(rect.height)}`);
+    }
+    return best;
+  }
+
   async function answerQuestion(questionText) {
     for (const [pattern, answer] of QA_BANK) {
       if (pattern.test(questionText)) return answer;
@@ -378,8 +517,9 @@ ${CV.name}`;
       }
     }
 
-    // 4. Send — poll for it, the modal sometimes renders the button late
-    const sendBtn = await waitFor(() => findButtonByText(scope, SELECTORS.sendButtonText), 12000);
+    // 4. Final Apply button — poll for it, the modal sometimes renders the button late
+    log('  [Wellfound] Waiting for final Apply button...');
+    const sendBtn = await waitFor(() => findFinalApplyButton(scope), 12000);
     if (!sendBtn) {
       // tell "button exists but disabled" (blocked application) apart from "selector miss"
       const disabledBtn = [...scope.querySelectorAll('button, [type="submit"]')]
@@ -389,18 +529,45 @@ ${CV.name}`;
         : '  ⚠ no Send button found after waiting — skipping');
       findButtonByText(scope, /close|cancel|×/i)?.click();
       scope.querySelector('[aria-label="Close"]')?.click();
-      return false;
+      return { success: false, reason: disabledBtn ? 'button_disabled' : 'button_not_found' };
     }
+
     if (CONFIG.DRY_RUN) {
-      log('  🔍 DRY_RUN — would click:', sendBtn.textContent.trim());
+      log('  🔍 DRY_RUN — would perform real browser click on:', sendBtn.textContent.trim());
+      log('  🔍 DRY_RUN — button enabled: ' + !sendBtn.disabled);
+      log('  🔍 DRY_RUN — button visible: ' + visible(sendBtn));
+      const rect = sendBtn.getBoundingClientRect();
+      log(`  🔍 DRY_RUN — bounding box: ${Math.round(rect.width)}x${Math.round(rect.height)} at (${Math.round(rect.x)},${Math.round(rect.y)})`);
       // close the modal so the loop can continue
       findButtonByText(scope, /close|cancel|×/i)?.click();
       scope.querySelector('[aria-label="Close"]')?.click();
-      return true;
+      return { success: true, reason: 'dry_run_verified', evidence: 'DRY RUN — button located and validated' };
     }
-    sendBtn.click();
-    log('  ✅ application sent');
-    return true;
+
+    // LIVE MODE: Use Playwright bridge for real browser-level click
+    log('  [Wellfound] Arming Playwright bridge for real click...');
+    signalPlaywrightReady(sendBtn);
+
+    // Wait for Playwright to perform the real click (with timeout)
+    const clicked = await waitForPlaywrightClick(20000);
+    if (!clicked) {
+      log('  [Wellfound] Playwright did not click within timeout — submission NOT verified');
+      window.__applyReady = false;
+      window.__applyBtnSelector = null;
+      return { success: false, reason: 'playwright_click_timeout', evidence: 'Playwright bridge timed out' };
+    }
+
+    log('  [Wellfound] Playwright click performed — waiting for submission verification...');
+
+    // Verify the submission actually went through
+    const verification = await verifySubmission(scope, 15000);
+    if (verification.success) {
+      log(`  [Wellfound] Application VERIFIED: ${verification.evidence}`);
+      return { success: true, reason: 'application_verified', evidence: verification.evidence };
+    } else {
+      log(`  [Wellfound] Application NOT VERIFIED: ${verification.evidence}`);
+      return { success: false, reason: 'submission_not_verified', evidence: verification.evidence };
+    }
   }
 
   // ======================= MAIN LOOP =======================
@@ -514,10 +681,12 @@ ${CV.name}`;
     job.linkEl.click(); // SPA overlay opens with the "Apply to <Company>" panel
     await sleep(3000);
 
-    const ok = await fillAndSubmit(job.company || getCompany(), job.title);
-    if (ok) {
+    const result = await fillAndSubmit(job.company || getCompany(), job.title);
+    if (result && result.success) {
       applied++;
       log(`  progress: ${applied}/${CONFIG.MAX_APPLICATIONS}`);
+    } else if (result) {
+      log(`  [Wellfound] Application failed: ${result.reason} — ${result.evidence || ''}`);
     }
     // close the job overlay (top-right ✕) so the next card is clickable
     await sleep(1000);
