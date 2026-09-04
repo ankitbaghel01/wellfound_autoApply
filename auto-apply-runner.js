@@ -60,7 +60,8 @@ const SITES = {
     searches: ['https://wellfound.com/jobs'],
     loginUrl: 'https://wellfound.com/login',
     injectOn: (url) => /wellfound\.com/.test(url),
-    submittedRe: /application sent|DRY_RUN — would click/i,
+    // Only count verified applications — not the old unverified "application sent"
+    submittedRe: /Application VERIFIED|DRY_RUN — would click/i,
     storeKey: null, // wellfound script keeps no localStorage state
     dailyCap: 50,
   },
@@ -140,6 +141,132 @@ function buildInjection() {
     try { await ${raw}
     } finally { window.__aaBusy = false; }
   })()`;
+}
+
+// Playwright bridge: when the injected script arms window.__applyReady,
+// this function performs a REAL browser-level click using Playwright's locator,
+// which dispatches genuine mouse events that React reliably processes.
+// The bridge does NOT rely on the injected script's button selection — it
+// independently finds the correct submit button using Playwright's own DOM queries.
+async function handleApplyBridge(page) {
+  if (!LIVE) return; // dry run — injected script handles it
+  try {
+    const ready = await page.evaluate('!!window.__applyReady').catch(() => false);
+    if (!ready) return;
+
+    log('  [bridge] Form ready — independently finding submit button...');
+
+    // Strategy 1: Find submit-type button in the apply modal
+    let clicked = false;
+    const submitBtn = await page.$('[role="dialog"] button[type="submit"], [role="dialog"] [type="submit"]');
+    if (submitBtn) {
+      const text = await submitBtn.textContent().catch(() => '');
+      const box = await submitBtn.boundingBox().catch(() => null);
+      log(`  [bridge] Found submit-type button: "${text.trim()}" box=${box ? Math.round(box.width) + 'x' + Math.round(box.height) : 'null'}`);
+      if (box && box.width > 50) {
+        await submitBtn.scrollIntoViewIfNeeded().catch(() => {});
+        await page.waitForTimeout(300);
+        await submitBtn.click({ timeout: 8000 }).then(() => { clicked = true; }).catch((e) => {
+          log(`  [bridge] submit click failed: ${e.message.slice(0, 100)}`);
+        });
+      }
+    }
+
+    // Strategy 2: Find "Apply"/"Send" button in the modal, preferring larger buttons
+    if (!clicked) {
+      const candidates = await page.$$('[role="dialog"] button, [role="dialog"] [type="submit"]').catch(() => []);
+      log(`  [bridge] Found ${candidates.length} buttons in dialog`);
+
+      let bestBtn = null;
+      let bestArea = 0;
+      for (const btn of candidates) {
+        const text = await btn.textContent().catch(() => '');
+        const trimmed = text.trim().toLowerCase();
+        if (!/^apply$|^send$|submit|send application$/i.test(trimmed)) continue;
+        const box = await btn.boundingBox().catch(() => null);
+        if (!box || box.width < 30 || box.height < 15) continue;
+        const area = box.width * box.height;
+        log(`  [bridge] candidate: "${text.trim()}" ${Math.round(box.width)}x${Math.round(box.height)} area=${area}`);
+        if (area > bestArea) {
+          bestArea = area;
+          bestBtn = btn;
+        }
+      }
+
+      if (bestBtn) {
+        const text = await bestBtn.textContent().catch(() => '');
+        log(`  [bridge] Best candidate: "${text.trim()}" (largest area)`);
+        await bestBtn.scrollIntoViewIfNeeded().catch(() => {});
+        await page.waitForTimeout(300);
+        await bestBtn.click({ timeout: 8000 }).then(() => { clicked = true; }).catch((e) => {
+          log(`  [bridge] best click failed: ${e.message.slice(0, 100)}`);
+        });
+      }
+    }
+
+    // Strategy 3: Text-based locator within dialog
+    if (!clicked) {
+      for (const btnText of ['Apply', 'Send', 'Submit', 'Send application']) {
+        const loc = page.locator(`[role="dialog"] button:has-text("${btnText}")`).first();
+        const count = await loc.count().catch(() => 0);
+        if (count > 0) {
+          const box = await loc.boundingBox().catch(() => null);
+          if (box && box.width > 50) {
+            log(`  [bridge] Text locator found: "${btnText}" ${Math.round(box.width)}x${Math.round(box.height)}`);
+            await loc.scrollIntoViewIfNeeded().catch(() => {});
+            await page.waitForTimeout(300);
+            await loc.click({ timeout: 8000 }).then(() => { clicked = true; }).catch((e) => {
+              log(`  [bridge] text click failed: ${e.message.slice(0, 100)}`);
+            });
+            if (clicked) break;
+          }
+        }
+      }
+    }
+
+    // Strategy 4: Coordinate fallback — find the button via evaluate and click at its center
+    if (!clicked) {
+      log('  [bridge] All strategies failed — trying coordinate fallback...');
+      const coords = await page.evaluate(() => {
+        const dialog = document.querySelector('[role="dialog"]');
+        if (!dialog) return null;
+        const buttons = [...dialog.querySelectorAll('button, [type="submit"]')];
+        // Find the largest apply/send button (submit buttons are typically wider)
+        let best = null;
+        let bestArea = 0;
+        for (const b of buttons) {
+          const text = b.textContent.trim().toLowerCase();
+          if (!/^apply$|^send$|submit|send application$/i.test(text)) continue;
+          const r = b.getBoundingClientRect();
+          if (r.width < 30 || r.height < 15) continue;
+          const area = r.width * r.height;
+          if (area > bestArea) {
+            bestArea = area;
+            best = { x: r.x + r.width / 2, y: r.y + r.height / 2, text: b.textContent.trim(), w: r.width, h: r.height };
+          }
+        }
+        return best;
+      }).catch(() => null);
+
+      if (coords) {
+        log(`  [bridge] Coordinate fallback: "${coords.text}" at (${Math.round(coords.x)},${Math.round(coords.y)}) ${Math.round(coords.w)}x${Math.round(coords.h)}`);
+        await page.mouse.click(coords.x, coords.y).then(() => { clicked = true; }).catch((e) => {
+          log(`  [bridge] mouse click failed: ${e.message.slice(0, 100)}`);
+        });
+      }
+    }
+
+    if (clicked) {
+      log('  [bridge] Real browser click performed — signaling injected script...');
+      await page.evaluate('window.__applyClicked = true').catch(() => {});
+    } else {
+      log('  [bridge] ALL click strategies failed — signaling failure');
+      await page.evaluate('window.__applyClicked = false; window.__applyReady = false').catch(() => {});
+    }
+  } catch (e) {
+    log('  [bridge] Error: ' + e.message.slice(0, 120));
+    await page.evaluate('window.__applyReady = false').catch(() => {});
+  }
 }
 
 (async () => {
@@ -264,8 +391,19 @@ function buildInjection() {
 
   // Supervisor: re-inject the search tab when idle, close finished form tabs,
   // rotate searches on inactivity, stop on target/time.
+  // Also polls for the Playwright bridge every 3 seconds for real-time click handling.
   while (submitted < TARGET && Date.now() < deadline) {
-    await new Promise((r) => setTimeout(r, 45000));
+    // Fast bridge polling: check every 3 seconds for armed apply buttons,
+    // interleaved with the 45-second supervisor cycle.
+    const cycleStart = Date.now();
+    while (Date.now() - cycleStart < 45000 && submitted < TARGET && Date.now() < deadline) {
+      for (const p of ctx.pages()) {
+        if (site.injectOn(p.url())) {
+          await handleApplyBridge(p).catch(() => {});
+        }
+      }
+      await new Promise((r) => setTimeout(r, 3000));
+    }
 
     const pages = ctx.pages();
     let anyBusy = false;
