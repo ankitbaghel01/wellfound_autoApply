@@ -1,0 +1,332 @@
+[9/5/2026, 12:30:57 PM] [wellfound] FATAL: browserType.launchPersistentContext: Opening in existing browser session. This usually means that the profile is already in use by another instance of Chromium.
+[9/6/2026, 12:30:14 PM] [wellfound] Starting. mode=LIVE target=50 applications, max 100 min
+[9/6/2026, 12:30:21 PM] [wellfound]   Starting. DRY_RUN=false, max=50
+[9/6/2026, 12:30:21 PM] [wellfound]   Tip: keep this tab focused and do not navigate away.
+[9/6/2026, 12:30:23 PM] [wellfound] Remote filter: "Only remote jobs" option not found (may already be set or UI changed)
+[9/6/2026, 12:30:26 PM] [wellfound]   (this page: 2 job cards found, 0 match filters — sample titles: "Data Science Intern", "Software Architect (L3/L4/L5)")
+[9/6/2026, 12:30:44 PM] [wellfound]   All search pages exhausted. Done.
+[9/6/2026, 12:30:44 PM] [wellfound]   Finished. Applied to 0 jobs.
+[9/6/2026, 12:31:08 PM] [wellfound]   Starting. DRY_RUN=false, max=50
+[9/6/2026, 12:31:08 PM] [wellfound]   Tip: keep this tab focused and do not navigate away.
+[9/6/2026, 12:31:13 PM] [wellfound]   (this page: 3 job cards found, 0 match filters — sample titles: "Data Science Intern", "Software Architect (L3/L4/L5)", "Professional Vibe Coder – Marketplace Growth")
+[9/6/2026, 12:31:31 PM] [wellfound]   All search pages exhausted. Done.
+[9/6/2026, 12:31:31 PM] [wellfound]   Finished. Applied to 0 jobs.
+[9/6/2026, 12:32:16 PM] [wellfound]   Starting. DRY_RUN=false, max=50
+[9/6/2026, 12:32:16 PM] [wellfound]   Tip: keep this tab focused and do not navigate away.
+[9/6/2026, 12:32:21 PM] [wellfound]   (this page: 3 job cards found, 0 match filters — sample titles: "Data Science Intern", "Software Architect (L3/L4/L5)", "Professional Vibe Coder – Marketplace Growth")
+[9/6/2026, 12:32:39 PM] [wellfound]   All search pages exhausted. Done.
+[9/6/2026, 12:32:39 PM] [wellfound]   Finished. Applied to 0 jobs.
+[9/6/2026, 12:33:24 PM] [wellfound]   Starting. DRY_RUN=false, max=50
+[9/6/2026, 12:33:24 PM] [wellfound]   Tip: keep this tab focused and do not navigate away.
+[9/6/2026, 12:33:29 PM] [wellfound]   (this page: 3 job cards found, 0 match filters — sample titles: "Data Science Intern", "Software Architect (L3/L4/L5)", "Professional Vibe Coder – Marketplace Growth")
+[9/6/2026, 12:33:47 PM] [wellfound]   All search pages exhausted. Done.
+[9/6/2026, 12:33:47 PM] [wellfound]   Finished. Applied to 0 jobs.
+[9/6/2026, 12:34:32 PM] [wellfound]   Starting. DRY_RUN=false, max=50
+[9/6/2026, 12:34:32 PM] [wellfound]   Tip: keep this tab focused and do not navigate away.
+[9/6/2026, 12:34:37 PM] [wellfound]   (this page: 3 job cards found, 0 match filters — sample titles: "Data Science Intern", "Software Architect (L3/L4/L5)", "Professional Vibe Coder – Marketplace Growth")
+[9/6/2026, 12:34:55 PM] [wellfound]   All search pages exhausted. Done.
+[9/6/2026, 12:34:55 PM] [wellfound]   Finished. Applied to 0 jobs.
+[9/6/2026, 12:35:40 PM] [wellfound]   Starting. DRY_RUN=false, max=50
+[9/6/2026, 12:35:40 PM] [wellfound]   Tip: keep this tab focused and do not navigate away.
+[9/6/2026, 12:35:45 PM] [wellfound]   (this page: 12 job cards found, 0 match filters — sample titles: "Professional Vibe Coder – Marketplace Growth", "Mobile Developer (Full-time/Intern/Potential Founder) (Clone)", "Full Stack Engineerin
+[9/6/2026, 12:35:54 PM] [wellfound]   ▶ Applying: Frontend Developer (Vue/TS) - 3+ YoE [No Personal DMs] @ ? | https://wellfound.com/jobs/4635082-frontend-developer-vue-ts-3-yoe-no-personal-dms | ₹6
+[9/6/2026, 12:35:58 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:35:58 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:35:58 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:35:58 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:35:58 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:35:58 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:35:58 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:35:58 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:35:58 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:35:58 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:35:58 PM] [wellfound] ==> 1/50 this run (1/50 today)
+[9/6/2026, 12:35:58 PM] [wellfound]   progress: 1/50
+[9/6/2026, 12:37:34 PM] [wellfound]   ▶ Applying: Backend Engineer (Python, Django, WebRTC/Livekit) @ ? | https://wellfound.com/jobs/4634146-backend-engineer-python-django-clone | ₹30,000 – ₹40,000
+[9/6/2026, 12:37:38 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:37:38 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:37:38 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:37:38 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:37:38 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:37:38 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:37:38 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:37:38 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:37:38 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:37:38 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:37:38 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:37:38 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:37:38 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:37:38 PM] [wellfound] ==> 2/50 this run (2/50 today)
+[9/6/2026, 12:37:38 PM] [wellfound]   progress: 2/50
+[9/6/2026, 12:39:16 PM] [wellfound]   ▶ Applying: Backend Engineer (Python/Django) @ ? | https://wellfound.com/jobs/4617827-backend-engineer-python-django-clone | ₹30,000 – ₹40,000
+[9/6/2026, 12:39:20 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:39:20 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:39:20 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:39:20 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:39:20 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:39:20 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:39:20 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:39:20 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:39:20 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:39:20 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:39:20 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:39:20 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:39:20 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:39:20 PM] [wellfound] ==> 3/50 this run (3/50 today)
+[9/6/2026, 12:39:20 PM] [wellfound]   progress: 3/50
+[9/6/2026, 12:41:05 PM] [wellfound]   ▶ Applying: Frontend Engineer @ ? | https://wellfound.com/jobs/4634108-frontend-engineer |
+[9/6/2026, 12:41:08 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:41:08 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:41:08 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:41:09 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:41:09 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:41:09 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:41:09 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:41:09 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:41:09 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:41:09 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:41:09 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:41:09 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:41:09 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:41:09 PM] [wellfound] ==> 4/50 this run (4/50 today)
+[9/6/2026, 12:41:09 PM] [wellfound]   progress: 4/50
+[9/6/2026, 12:42:44 PM] [wellfound]   ▶ Applying: Fullstack Engineer (SDE-1) @ ? | https://wellfound.com/jobs/4632597-fullstack-engineer-sde-1 | ₹3
+[9/6/2026, 12:42:47 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:42:47 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:42:47 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:42:47 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:42:47 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:42:47 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:42:47 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:42:47 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:42:47 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:42:47 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:42:47 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:42:47 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:42:47 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:42:47 PM] [wellfound] ==> 5/50 this run (5/50 today)
+[9/6/2026, 12:42:47 PM] [wellfound]   progress: 5/50
+[9/6/2026, 12:45:10 PM] [wellfound]   (this page: 60 job cards found, 0 match filters — sample titles: "Professional Vibe Coder – Marketplace Growth", "Mobile Developer (Full-time/Intern/Potential Founder) (Clone)", "Full Stack Engineerin
+[9/6/2026, 12:45:19 PM] [wellfound]   ▶ Applying: Full Stack Product Engineer: Maps, Dashboards & Operations UX @ ? | https://wellfound.com/jobs/3886116-full-stack-product-engineer-maps-dashboards-operations-ux |
+[9/6/2026, 12:45:22 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:45:22 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:45:22 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:45:23 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:45:23 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:45:23 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:45:23 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:45:23 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:45:23 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:45:23 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:45:23 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:45:23 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:45:23 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:45:23 PM] [wellfound] ==> 6/50 this run (6/50 today)
+[9/6/2026, 12:45:23 PM] [wellfound]   progress: 6/50
+[9/6/2026, 12:47:47 PM] [wellfound]   ▶ Applying: Software Engineer (Fastapi, react) @ ? | https://wellfound.com/jobs/4626084-software-engineer-fastapi-react | ₹6
+[9/6/2026, 12:47:50 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:47:50 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:47:50 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:47:50 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:47:50 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:47:50 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:47:50 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:47:50 PM] [wellfound]   [debug] bbox: {"x":803,"y":687,"w":293,"h":38}
+[9/6/2026, 12:47:50 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:47:50 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:47:50 PM] [wellfound] ==> 7/50 this run (7/50 today)
+[9/6/2026, 12:47:50 PM] [wellfound]   progress: 7/50
+[9/6/2026, 12:50:15 PM] [wellfound]   ▶ Applying: Sr Full Stack Engineer @ ? | https://wellfound.com/jobs/2311171-sr-full-stack-engineer | ₹15
+[9/6/2026, 12:50:18 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:50:18 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:50:18 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:50:19 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:50:19 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:50:19 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:50:19 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:50:19 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:50:19 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:50:19 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:50:19 PM] [wellfound]   [debug] bbox: {"x":803,"y":687,"w":293,"h":38}
+[9/6/2026, 12:50:19 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:50:19 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:50:19 PM] [wellfound] ==> 8/50 this run (8/50 today)
+[9/6/2026, 12:50:19 PM] [wellfound]   progress: 8/50
+[9/6/2026, 12:52:02 PM] [wellfound]   ▶ Applying: Founding Software Engineer @ ? | https://wellfound.com/jobs/2889543-founding-software-engineer | ₹40
+[9/6/2026, 12:52:05 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:52:06 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:52:06 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:52:06 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:52:06 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:52:06 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:52:06 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:52:06 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:52:06 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:52:06 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:52:06 PM] [wellfound]   [debug] bbox: {"x":803,"y":687,"w":293,"h":38}
+[9/6/2026, 12:52:06 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:52:06 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:52:06 PM] [wellfound] ==> 9/50 this run (9/50 today)
+[9/6/2026, 12:52:06 PM] [wellfound]   progress: 9/50
+[9/6/2026, 12:54:10 PM] [wellfound]   ▶ Applying: Full-Stack Developer (EU) - AWS @ ? | https://wellfound.com/jobs/4617814-full-stack-developer-eu-based-node-js-react-clone | $72k – $120k
+[9/6/2026, 12:54:13 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:54:13 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:54:13 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:54:13 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:54:13 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:54:13 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:54:13 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:54:13 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:54:13 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:54:13 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:54:13 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:54:13 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:54:13 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:54:13 PM] [wellfound] ==> 10/50 this run (10/50 today)
+[9/6/2026, 12:54:13 PM] [wellfound]   progress: 10/50
+[9/6/2026, 12:56:24 PM] [wellfound]   ▶ Applying: Full Stack Engineer @ ? | https://wellfound.com/jobs/4617746-full-stack-engineer |
+[9/6/2026, 12:56:28 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:56:28 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:56:28 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:56:28 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:56:28 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:56:28 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:56:28 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:56:28 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:56:28 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:56:28 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:56:28 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:56:28 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:56:28 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:56:28 PM] [wellfound] ==> 11/50 this run (11/50 today)
+[9/6/2026, 12:56:28 PM] [wellfound]   progress: 11/50
+[9/6/2026, 12:58:10 PM] [wellfound]   (this page: 84 job cards found, 0 match filters — sample titles: "Professional Vibe Coder – Marketplace Growth", "Mobile Developer (Full-time/Intern/Potential Founder) (Clone)", "Full Stack Engineerin
+[9/6/2026, 12:58:22 PM] [wellfound]   ▶ Applying: Software Developer (𝗪𝗲𝗯 𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗺𝗲𝗻𝘁 + 𝗙𝗹𝘂𝘁𝘁𝗲𝗿 𝗜𝗻𝘁𝗲𝗿𝗻𝘀) @ ? | https://wellfound.com/jobs/4616410-software-developer |
+[9/6/2026, 12:58:26 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:58:26 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:58:26 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:58:26 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:58:26 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:58:26 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:58:26 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:58:26 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:58:26 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:58:26 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:58:26 PM] [wellfound]   [debug] bbox: {"x":803,"y":495,"w":293,"h":38}
+[9/6/2026, 12:58:26 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:58:26 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:58:26 PM] [wellfound] ==> 12/50 this run (12/50 today)
+[9/6/2026, 12:58:26 PM] [wellfound]   progress: 12/50
+[9/6/2026, 12:59:50 PM] [wellfound]   ▶ Applying: Agentic AI Engineer @ ? | https://wellfound.com/jobs/4348051-agentic-ai-engineer | ₹22
+[9/6/2026, 12:59:53 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 12:59:53 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 12:59:53 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 12:59:54 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 12:59:54 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 12:59:54 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 12:59:54 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 12:59:54 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 12:59:54 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 12:59:54 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 12:59:54 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 12:59:54 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 12:59:54 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 12:59:54 PM] [wellfound] ==> 13/50 this run (13/50 today)
+[9/6/2026, 12:59:54 PM] [wellfound]   progress: 13/50
+[9/6/2026, 1:02:03 PM] [wellfound]   (this page: 97 job cards found, 0 match filters — sample titles: "Professional Vibe Coder – Marketplace Growth", "Mobile Developer (Full-time/Intern/Potential Founder) (Clone)", "Full Stack Engineerin
+[9/6/2026, 1:02:15 PM] [wellfound]   ▶ Applying: Junior Backend Developer @ ? | https://wellfound.com/jobs/4602413-junior-backend-developer | ₹6
+[9/6/2026, 1:02:18 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 1:02:18 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 1:02:18 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 1:02:18 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 1:02:19 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 1:02:19 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 1:02:19 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 1:02:19 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 1:02:19 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 1:02:19 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 1:02:19 PM] [wellfound]   [debug] bbox: {"x":803,"y":687,"w":293,"h":38}
+[9/6/2026, 1:02:19 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 1:02:19 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 1:02:19 PM] [wellfound] ==> 14/50 this run (14/50 today)
+[9/6/2026, 1:02:19 PM] [wellfound]   progress: 14/50
+[9/6/2026, 1:03:28 PM] [wellfound]   ▶ Applying: Junior Applied AI Engineer- Agents & Integrations @ ? | https://wellfound.com/jobs/4597637-junior-applied-ai-engineer-agents-integrations | ₹2
+[9/6/2026, 1:03:31 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 1:03:31 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 1:03:31 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 1:03:31 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 1:03:31 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 1:03:31 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 1:03:31 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 1:03:31 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 1:03:31 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 1:03:31 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 1:03:31 PM] [wellfound]   [debug] bbox: {"x":803,"y":687,"w":293,"h":38}
+[9/6/2026, 1:03:31 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 1:03:32 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 1:03:32 PM] [wellfound] ==> 15/50 this run (15/50 today)
+[9/6/2026, 1:03:32 PM] [wellfound]   progress: 15/50
+[9/6/2026, 1:05:00 PM] [wellfound]   ▶ Applying: Junior Applied AI Engineer - Document & Voice Systems @ ? | https://wellfound.com/jobs/4597634-fractional-principal-ai-systems-architect-clone | ₹2
+[9/6/2026, 1:05:03 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 1:05:03 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 1:05:03 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 1:05:03 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 1:05:04 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 1:05:04 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 1:05:04 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 1:05:04 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 1:05:04 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 1:05:04 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 1:05:04 PM] [wellfound]   [debug] bbox: {"x":803,"y":687,"w":293,"h":38}
+[9/6/2026, 1:05:04 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 1:05:04 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 1:05:04 PM] [wellfound] ==> 16/50 this run (16/50 today)
+[9/6/2026, 1:05:04 PM] [wellfound]   progress: 16/50
+[9/6/2026, 1:07:25 PM] [wellfound]   ▶ Applying: Full Stack Developer @ ? | https://wellfound.com/jobs/3721620-full-stack-developer | ₹12
+[9/6/2026, 1:07:29 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 1:07:29 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 1:07:29 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 1:07:29 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 1:07:29 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 1:07:29 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 1:07:29 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 1:07:29 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 1:07:29 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 1:07:29 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 1:07:29 PM] [wellfound]   [debug] bbox: {"x":803,"y":687,"w":293,"h":38}
+[9/6/2026, 1:07:29 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 1:07:29 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 1:07:29 PM] [wellfound] ==> 17/50 this run (17/50 today)
+[9/6/2026, 1:07:29 PM] [wellfound]   progress: 17/50
+[9/6/2026, 1:08:45 PM] [wellfound]   ▶ Applying: Frontend Engineer @ ? | https://wellfound.com/jobs/4014774-frontend-engineer | ₹11
+[9/6/2026, 1:08:49 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 1:08:49 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 1:08:49 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 1:08:49 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 1:08:49 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 1:08:49 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 1:08:49 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 1:08:49 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 1:08:49 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 1:08:49 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 1:08:49 PM] [wellfound]   [debug] bbox: {"x":803,"y":687,"w":293,"h":38}
+[9/6/2026, 1:08:49 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 1:08:49 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 1:08:49 PM] [wellfound] ==> 18/50 this run (18/50 today)
+[9/6/2026, 1:08:49 PM] [wellfound]   progress: 18/50
+[9/6/2026, 1:11:03 PM] [wellfound]   ▶ Applying: Staff Software Engineer @ ? | https://wellfound.com/jobs/3143348-staff-software-engineer | $45k – $80k
+[9/6/2026, 1:11:07 PM] [wellfound]   ✍ cover letter filled
+[9/6/2026, 1:11:07 PM] [wellfound]   ☑ radio "No remote jobs"
+[9/6/2026, 1:11:07 PM] [wellfound]   ☑ radio "Include remote jobs"
+[9/6/2026, 1:11:07 PM] [wellfound]   ☑ radio "Only remote jobs"
+[9/6/2026, 1:11:07 PM] [wellfound]   [debug] Searching for final submit button...
+[9/6/2026, 1:11:07 PM] [wellfound]   [debug] Final submit button found
+[9/6/2026, 1:11:07 PM] [wellfound]   [debug] Button text: "Apply"
+[9/6/2026, 1:11:07 PM] [wellfound]   [debug] Button tag: BUTTON
+[9/6/2026, 1:11:07 PM] [wellfound]   [debug] disabled: false
+[9/6/2026, 1:11:07 PM] [wellfound]   [debug] visible: true
+[9/6/2026, 1:11:07 PM] [wellfound]   [debug] bbox: {"x":774,"y":687,"w":322,"h":38}
+[9/6/2026, 1:11:07 PM] [wellfound]   [debug] Attempt 1: Simulated click...
+[9/6/2026, 1:11:07 PM] [wellfound]   ✅ APPLICATION_VERIFIED (success_text)
+[9/6/2026, 1:11:07 PM] [wellfound] ==> 19/50 this run (19/50 today)
+[9/6/2026, 1:11:07 PM] [wellfound]   progress: 19/50
