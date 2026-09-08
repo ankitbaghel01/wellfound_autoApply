@@ -39,6 +39,7 @@
       'web developer', 'ai engineer', 'ai developer', 'ml engineer',
       'react', 'node', 'javascript', 'typescript', 'python', 'mobile',
       'react native', 'sde', 'member of technical staff',
+      'engineer', 'developer', 'programmer',
     ],
     // Skip jobs whose title contains any of these
     TITLE_BLOCKLIST: [
@@ -46,7 +47,14 @@
       'data engineer', 'qa', 'test', 'intern', 'designer', 'sales', 'marketing',
       'teacher', 'trainer', 'tutor', 'instructor', 'coach',
       '.net', 'c#', 'php', 'ruby', 'golang', 'ios', 'android native', 'flutter',
-      'in office', 'on-site', 'onsite',
+    ],
+    // Indian cities/locations to accept for on-site/hybrid jobs
+    INDIA_LOCATIONS: [
+      'bangalore', 'bengaluru', 'hyderabad', 'mumbai', 'pune', 'chennai',
+      'delhi', 'noida', 'gurgaon', 'gurugram', 'kolkata', 'ahmedabad',
+      'jaipur', 'lucknow', 'chandigarh', 'kochi', 'coimbatore', 'indore',
+      'bhopal', 'nagpur', 'visakhapatnam', 'vijayawada', 'surat', 'rajkot',
+      'india',
     ],
   };
 
@@ -125,8 +133,8 @@ ${CV.name}`;
   // React-controlled inputs ignore plain .value writes — use the native setter + input event.
   function setValue(el, value) {
     const proto = el.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype
-                : el.tagName === 'SELECT' ? HTMLSelectElement.prototype
-                : HTMLInputElement.prototype;
+      : el.tagName === 'SELECT' ? HTMLSelectElement.prototype
+        : HTMLInputElement.prototype;
     Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, value);
     el.dispatchEvent(new Event('input', { bubbles: true }));
     el.dispatchEvent(new Event('change', { bubbles: true }));
@@ -157,6 +165,7 @@ ${CV.name}`;
       .replace(/\s+/g, ' ')
       .split(/remote only|on-?site|in office|hybrid|₹|\$\d|€|posted \d|recruiter|•|\d+\s?(?:weeks?|days?|months?|hours?)\s?ago/i)[0]
       .replace(/\(?\s*remote\s*\)?$/i, '')
+      .replace(/\(.*?\)/g, '')  // strip parenthetical annotations like (Full-time/Intern/...)
       .replace(/[\s\-–—|(,/]+$/g, '')
       .trim();
   }
@@ -237,7 +246,7 @@ ${CV.name}`;
           delete window[key];
           return val;
         }
-      } catch (e) {}
+      } catch (e) { }
       await sleep(300);
     }
     return null;
@@ -285,8 +294,12 @@ ${CV.name}`;
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{ parts: [{ text:
-                `You are answering a job application question on my behalf. Answer in first person, 2-4 sentences, professional, no markdown.\n\nMy CV:\n${JSON.stringify(CV)}\n\nQuestion: ${questionText}` }] }],
+              contents: [{
+                parts: [{
+                  text:
+                    `You are answering a job application question on my behalf. Answer in first person, 2-4 sentences, professional, no markdown.\n\nMy CV:\n${JSON.stringify(CV)}\n\nQuestion: ${questionText}`
+                }]
+              }],
             }),
           }
         );
@@ -318,8 +331,8 @@ ${CV.name}`;
     const modal = await waitFor(() => {
       const dialogs = [...document.querySelectorAll(SELECTORS.modal)];
       return dialogs.find((d) => /apply to /i.test(d.textContent) && d.querySelector('textarea')) ||
-             dialogs.find((d) => /apply to /i.test(d.textContent)) || // panel with only radio/select questions, no cover-letter box
-             dialogs.find((d) => d.querySelector('textarea'));
+        dialogs.find((d) => /apply to /i.test(d.textContent)) || // panel with only radio/select questions, no cover-letter box
+        dialogs.find((d) => d.querySelector('textarea'));
     });
     // No apply modal → we're on a bare job page (full navigation, e.g. from a
     // non-SPA search page). The page-level "Apply" button only OPENS the panel;
@@ -447,13 +460,13 @@ ${CV.name}`;
       const own = labelTextOf(cb);
       // Question text around the checkbox group (fieldset legend or nearby container)
       const groupText = (cb.closest('fieldset')?.querySelector('legend')?.textContent ||
-                         cb.closest('fieldset, [role="group"]')?.textContent || '').trim();
+        cb.closest('fieldset, [role="group"]')?.textContent || '').trim();
       const isLocationQuestion = /relocat|locat|city|office|work from|based in|move to/i.test(groupText);
       // Tick if: it's an agree/authorize/relocate box, OR it belongs to a location
       // question — any city the job lists is fine, I'll relocate there.
       // Still never blind-check unrelated boxes (newsletters etc.).
       if (!cb.checked &&
-          (isLocationQuestion || /relocat|agree|confirm|authoriz|terms|acknowledge|remote/i.test(own))) {
+        (isLocationQuestion || /relocat|agree|confirm|authoriz|terms|acknowledge|remote/i.test(own))) {
         cb.click();
         log(`  ☑ checked "${own.slice(0, 50)}"`);
       }
@@ -494,7 +507,7 @@ ${CV.name}`;
     log(`  [debug] Button tag: ${sendBtn.tagName}`);
     log(`  [debug] disabled: ${sendBtn.disabled}`);
     log(`  [debug] visible: ${visible(sendBtn)}`);
-    log(`  [debug] bbox: ${JSON.stringify({x: Math.round(btnBBox.x), y: Math.round(btnBBox.y), w: Math.round(btnBBox.width), h: Math.round(btnBBox.height)})}`);
+    log(`  [debug] bbox: ${JSON.stringify({ x: Math.round(btnBBox.x), y: Math.round(btnBBox.y), w: Math.round(btnBBox.width), h: Math.round(btnBBox.height) })}`);
 
     if (CONFIG.DRY_RUN) {
       log(`  🔍 DRY_RUN — would perform real browser click on: "${btnText}"`);
@@ -563,7 +576,15 @@ ${CV.name}`;
   const titleOk = (t) => {
     const lower = t.toLowerCase();
     return CONFIG.TITLE_KEYWORDS.some((k) => lower.includes(k)) &&
-           !CONFIG.TITLE_BLOCKLIST.some((k) => lower.includes(k));
+      !CONFIG.TITLE_BLOCKLIST.some((k) => lower.includes(k));
+  };
+
+  // Accept if remote OR based in India
+  const locationOk = (loc) => {
+    if (!loc) return true; // no location info → accept (will handle in apply form)
+    const lower = loc.toLowerCase();
+    if (/remote/i.test(lower)) return true;
+    return CONFIG.INDIA_LOCATIONS.some((city) => lower.includes(city));
   };
 
   // 2026 UI: job cards no longer carry an Apply button. Clicking the job link opens
@@ -592,7 +613,11 @@ ${CV.name}`;
       const company = (row.querySelector('img[alt*="logo" i]')?.alt || '')
         .replace(/company logo/i, '').trim();
       const salary = (row.textContent.match(/(?:₹|\$|€)\s?[\d.,k]+\s?(?:[–-]\s?(?:₹|\$|€)?\s?[\d.,k]+)?k?/i) || [''])[0].trim();
-      rows.push({ href: a.href, title: cleanTitle(a.textContent), company, salary, linkEl: a });
+      // Extract location from card text (appears near title, before salary/posted info)
+      const cardText = row.textContent || '';
+      const locMatch = cardText.match(/(remote only|on-?site|in office|hybrid|[^·•\n]{2,40}(?:India|Bangalore|Bengaluru|Hyderabad|Mumbai|Pune|Chennai|Delhi|Noida|Gurgaon|Gurugram|Kolkata|Ahmedabad|Jaipur|Lucknow|Chandigarh|Kochi|Coimbatore|Indore|Bhopal|Nagpur|Visakhapatnam|Vijayawada|Surat|Rajkot)[^·•\n]{0,20})/i);
+      const location = locMatch ? locMatch[1].trim() : '';
+      rows.push({ href: a.href, title: cleanTitle(a.textContent), company, salary, location, linkEl: a });
     }
     return rows;
   }
@@ -637,12 +662,12 @@ ${CV.name}`;
 
   while (applied < CONFIG.MAX_APPLICATIONS) {
     const allRows = findJobRows();
-    const jobs = allRows.filter((j) => !seen.has(j.href) && titleOk(j.title));
+    const jobs = allRows.filter((j) => !seen.has(j.href) && titleOk(j.title) && locationOk(j.location));
 
     if (!jobs.length) {
       // Diagnostics so failures are debuggable from the console output
       log(`(this page: ${allRows.length} job cards found, 0 match filters` +
-          (allRows.length ? ` — sample titles: ${allRows.slice(0, 3).map((j) => `"${j.title}"`).join(', ')}` : '') + ')');
+        (allRows.length ? ` — sample: ${allRows.slice(0, 3).map((j) => `"${j.title}" [${j.location || 'no-loc'}]`).join(', ')}` : '') + ')');
 
       // Try to load more results on this page first
       const more = findButtonByText(document, /load more|show more/i); // "next" is too generic — could hit a form's Next button
@@ -652,7 +677,7 @@ ${CV.name}`;
       for (let s = 0; s < 6 && !grew; s++) {
         window.scrollTo(0, document.body.scrollHeight);
         await sleep(3000);
-        grew = findJobRows().some((j) => !seen.has(j.href) && titleOk(j.title));
+        grew = findJobRows().some((j) => !seen.has(j.href) && titleOk(j.title) && locationOk(j.location));
       }
       if (grew) continue;
 
@@ -664,7 +689,7 @@ ${CV.name}`;
 
     const job = jobs[0];
     seen.add(job.href);
-    log(`▶ Applying: ${job.title} @ ${job.company || '?'} | ${job.href} | ${job.salary || ''}`);
+    log(`▶ Applying: ${job.title} @ ${job.company || '?'} | ${job.location || 'remote'} | ${job.href} | ${job.salary || ''}`);
     job.linkEl.scrollIntoView({ block: 'center' });
     await sleep(500);
     job.linkEl.click(); // SPA overlay opens with the "Apply to <Company>" panel

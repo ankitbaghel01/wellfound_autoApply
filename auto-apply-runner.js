@@ -341,32 +341,8 @@ function buildInjection() {
     log('WARNING: page looks logged-out or bot-checked. If runs keep finding 0 jobs, run: node auto-apply-runner.js ' + SITE_ARG + ' login');
   }
 
-  // Select "Only remote jobs" filter if available
-  if (SITE_ARG === 'wellfound') {
-    try {
-      const remoteFilterApplied = await mainPage.evaluate(() => {
-        // Look for radio/button with "Only remote jobs" text
-        const elements = [...document.querySelectorAll('label, [role="radio"], button, div, span, input')];
-        const remoteOption = elements.find(el => {
-          const text = el.textContent.trim().toLowerCase();
-          return text.includes('only remote jobs') && el.getClientRects().length > 0;
-        });
-        if (remoteOption) {
-          remoteOption.click();
-          return true;
-        }
-        return false;
-      });
-      if (remoteFilterApplied) {
-        log('Remote filter: selected "Only remote jobs"');
-        await mainPage.waitForTimeout(3000); // let the page reload with remote jobs
-      } else {
-        log('Remote filter: "Only remote jobs" option not found (may already be set or UI changed)');
-      }
-    } catch (e) {
-      log('Remote filter: could not set filter — ' + e.message);
-    }
-  }
+  // Location filter removed — the console script now handles location filtering
+  // (accepts remote OR India-based jobs via locationOk() in wellfound-auto-apply.js)
 
   await mainPage.evaluate(injection).catch(() => {});
 
