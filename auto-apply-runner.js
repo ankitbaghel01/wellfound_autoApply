@@ -60,7 +60,7 @@ const SITES = {
     searches: ['https://wellfound.com/jobs'],
     loginUrl: 'https://wellfound.com/login',
     injectOn: (url) => /wellfound\.com/.test(url),
-    submittedRe: /application sent|DRY_RUN — would click/i,
+    submittedRe: /APPLICATION_VERIFIED|DRY_RUN — would/i,
     storeKey: null, // wellfound script keeps no localStorage state
     dailyCap: 50,
   },
@@ -125,6 +125,79 @@ function logApplication(job) {
   fs.appendFileSync(CSV_FILE, csvRow([new Date().toLocaleString(), SITE_ARG, job.title, job.company, job.salary, job.skills, job.link, job.jd]));
 }
 
+// ======== Bridge: Playwright performs the final click when the injected script signals readiness ========
+async function handlePlaywrightClick(page, readyMsg) {
+  const selector = readyMsg.split('[wf-submit-ready] ')[1]?.trim();
+  if (!selector) return;
+
+  log('  [bridge] Playwright performing click on: ' + selector);
+
+  try {
+    const locator = page.locator(selector);
+    await locator.waitFor({ state: 'visible', timeout: 5000 });
+    await locator.scrollIntoViewIfNeeded();
+    await locator.click({ timeout: 5000 });
+    log('  [bridge] Click performed, waiting for submission evidence...');
+
+    const evidence = await checkPageEvidence(page);
+    if (evidence) {
+      const result = { success: true, reason: 'playwright_click', evidence };
+      await page.evaluate(`window.__wfSubmitResult = ${JSON.stringify(result)}`);
+      log('  [bridge] APPLICATION_VERIFIED: ' + evidence);
+      return;
+    }
+
+    // Wait a bit more and check again
+    await page.waitForTimeout(3000);
+    const evidence2 = await checkPageEvidence(page);
+    if (evidence2) {
+      const result = { success: true, reason: 'playwright_click', evidence: evidence2 };
+      await page.evaluate(`window.__wfSubmitResult = ${JSON.stringify(result)}`);
+      log('  [bridge] APPLICATION_VERIFIED (delayed): ' + evidence2);
+    } else {
+      const result = { success: false, reason: 'no_evidence_after_click' };
+      await page.evaluate(`window.__wfSubmitResult = ${JSON.stringify(result)}`);
+      log('  [bridge] APPLICATION_FAILED: no evidence after Playwright click');
+    }
+  } catch (e) {
+    log('  [bridge] Click failed: ' + e.message);
+    try {
+      await page.evaluate(`window.__wfSubmitResult = ${JSON.stringify({ success: false, reason: 'click_error', error: e.message })}`);
+    } catch (e2) {}
+  }
+}
+
+async function checkPageEvidence(page) {
+  return page.evaluate(() => {
+    // Check if the apply panel/modal is gone (closed on success)
+    const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+    const applyPanel = dialogs.find(d => /apply to/i.test(d.textContent) && d.getClientRects().length > 0);
+
+    if (!applyPanel) {
+      // No visible apply panel — might have closed on success
+      const visibleDialogs = dialogs.filter(d => d.getClientRects().length > 0);
+      if (visibleDialogs.length === 0) return 'panel_closed';
+    }
+
+    if (applyPanel) {
+      const text = applyPanel.textContent || '';
+      if (/thank you|applied successfully|application submitted|received your application|successfully applied/i.test(text)) return 'success_text';
+    }
+
+    // Check for toast/success notification anywhere on page
+    const alerts = document.querySelectorAll('[role="alert"], [class*="toast" i], [class*="notification" i], [class*="snack" i]');
+    for (const a of alerts) {
+      if (a.getClientRects().length > 0 && /success|applied|submitted|thank/i.test(a.textContent)) return 'toast_notification';
+    }
+
+    // Check if the submit button text changed to "Applied" etc.
+    const markedBtn = document.querySelector('[data-wf-apply-submit]');
+    if (markedBtn && /^applied$|^submitted$|^done$/i.test(markedBtn.textContent.trim())) return 'button_applied';
+
+    return null;
+  });
+}
+
 // Patch the console script: our DRY_RUN flag, our per-run target, and a busy-guard
 // so a second injection while one is still running becomes a no-op.
 function buildInjection() {
@@ -148,7 +221,7 @@ function buildInjection() {
     return;
   }
   const ctx = await chromium.launchPersistentContext(path.join(__dirname, site.profile), {
-    channel: 'chrome',
+    executablePath: '/usr/bin/chromium',
     headless: false, // bot checks block headless; headed + off-screen instead (same trick as naukri refresh)
     viewport: { width: 1280, height: 900 },
     args: [
@@ -182,13 +255,20 @@ function buildInjection() {
   function wire(page) {
     page.on('console', (msg) => {
       const text = msg.text();
+
+      // Bridge: injected script ready for Playwright click
+      if (text.includes('[wf-submit-ready]')) {
+        handlePlaywrightClick(page, text).catch(e => log('Bridge error: ' + e.message));
+        return;
+      }
+
       if (!/auto-apply/.test(text)) return;
       lastActivity = Date.now();
       const clean = text.replace(/%c\[auto-apply\]\s*\S*/, '').trim();
-      log('  ' + clean.slice(0, 160));
+      log('  ' + clean.slice(0, 200));
 
       // snapshot the wizard whenever it can't proceed, so the blocking field is visible
-      if (/no Continue\/Submit button found|no Send button found/.test(clean)) {
+      if (/no Continue\/Submit button found|no Submit button found|APPLICATION_FAILED/.test(clean)) {
         page.screenshot({ path: path.join(__dirname, `blocked-step-${SITE_ARG}.png`) }).catch(() => {});
       }
 
@@ -260,6 +340,10 @@ function buildInjection() {
   if (/sign in|log in to continue|create an account|verify you are human/i.test(bodyText) && !/sign out/i.test(bodyText)) {
     log('WARNING: page looks logged-out or bot-checked. If runs keep finding 0 jobs, run: node auto-apply-runner.js ' + SITE_ARG + ' login');
   }
+
+  // Location filter removed — the console script now handles location filtering
+  // (accepts remote OR India-based jobs via locationOk() in wellfound-auto-apply.js)
+
   await mainPage.evaluate(injection).catch(() => {});
 
   // Supervisor: re-inject the search tab when idle, close finished form tabs,
