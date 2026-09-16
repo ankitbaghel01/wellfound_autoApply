@@ -16,10 +16,10 @@ so you can watch it work before going live.
 
 ## Requirements
 
-- Windows 10/11 (Task Scheduler used for automatic daily runs — manual runs work anywhere Node does)
 - [Node.js](https://nodejs.org/) 18+
 - Google Chrome
 - A Wellfound account with your profile + resume completed
+- **For automatic daily runs:** Windows Task Scheduler or Linux with systemd
 
 ## Setup
 
@@ -97,7 +97,9 @@ Wellfound asks, it picks "I can relocate to…" and selects the job's offered lo
 Jobs the company has location-blocked are detected and skipped. Jobs posted more than
 14 days ago are skipped.
 
-## Run it automatically every day (Task Scheduler)
+## Run it automatically every day
+
+### Windows (Task Scheduler)
 
 ```powershell
 $repo = "C:\path\to\wellfound_autoApply"
@@ -113,6 +115,38 @@ Start-ScheduledTask WellfoundAutoApply       # run now
 Disable-ScheduledTask WellfoundAutoApply     # pause
 Enable-ScheduledTask WellfoundAutoApply      # resume
 Unregister-ScheduledTask WellfoundAutoApply  # remove
+```
+
+### Linux (systemd timer)
+
+Runs daily at **18:30**. If the system was off at that time, it catches up
+and runs immediately on boot (`Persistent=true`).
+
+**1. Install the timer:**
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+**2. Useful commands:**
+
+```bash
+systemctl status wellfound-auto-apply.timer        # check timer status
+systemctl list-timers --all                         # list all timers
+sudo systemctl start wellfound-auto-apply.service   # run now manually
+sudo systemctl stop wellfound-auto-apply.timer      # disable timer
+sudo journalctl -u wellfound-auto-apply.service     # view logs
+cat auto-apply-scheduler.log                        # view detailed log
+```
+
+**3. Uninstall:**
+
+```bash
+sudo systemctl stop wellfound-auto-apply.timer
+sudo systemctl disable wellfound-auto-apply.timer
+sudo rm /etc/systemd/system/wellfound-auto-apply.{service,timer}
+sudo systemctl daemon-reload
 ```
 
 ## Troubleshooting
@@ -133,9 +167,13 @@ Unregister-ScheduledTask WellfoundAutoApply  # remove
 | `wellfound-auto-apply.js` | The Wellfound apply logic (also pasteable directly into the DevTools console) |
 | `config.js` | Tiny no-dependency `.env` loader |
 | `.env.example` | Template — copy to `.env` and fill in |
+| `scheduler.sh` | Shell wrapper called by systemd — handles locking, logging, dependency install |
+| `install.sh` | One-time setup: installs systemd timer + service units |
+| `systemd/wellfound-auto-apply.service` | systemd service unit (oneshot) |
+| `systemd/wellfound-auto-apply.timer` | systemd timer unit — fires daily at 18:30, Persistent=true |
 | `applications.csv` | Every submitted application (git-ignored) |
 | `apply-state-wellfound.json` | Today's application count for the 50/day cap (git-ignored) |
-| `auto-apply-wellfound.log` | Run history (git-ignored) |
+| `auto-apply-scheduler.log` | Scheduler run history (git-ignored) |
 | `.wellfound-chrome-profile/` | Saved Chrome session (git-ignored) |
 
 ## Disclaimer

@@ -3,3 +3,5 @@ node_modules
 apply-state-wellfound.json
 applications.csv
 .wellfound-chrome-profile
+auto-apply-scheduler.log
+auto-apply-wellfound.log

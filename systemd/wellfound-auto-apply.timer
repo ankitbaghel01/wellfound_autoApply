@@ -1,0 +1,10 @@
+[Unit]
+Description=Wellfound Auto-Apply Daily Timer (18:30)
+
+[Timer]
+OnCalendar=*-*-* 18:30:00
+Persistent=true
+RandomizedDelaySec=0
+
+[Install]
+WantedBy=timers.target
