@@ -22,17 +22,26 @@ else
 fi
 
 # Create target directory
-sudo mkdir -p "${TARGET_DIR}"
+if [ "$USER_MODE" = "--user" ]; then
+    mkdir -p "${TARGET_DIR}"
+else
+    sudo mkdir -p "${TARGET_DIR}"
+fi
 
 # Copy unit files
-sudo cp "${SYSTEMD_DIR}/${SERVICE_NAME}.service" "${TARGET_DIR}/"
-sudo cp "${SYSTEMD_DIR}/${SERVICE_NAME}.timer" "${TARGET_DIR}/"
+if [ "$USER_MODE" = "--user" ]; then
+    cp "${SYSTEMD_DIR}/${SERVICE_NAME}.service" "${TARGET_DIR}/"
+    cp "${SYSTEMD_DIR}/${SERVICE_NAME}.timer" "${TARGET_DIR}/"
+else
+    sudo cp "${SYSTEMD_DIR}/${SERVICE_NAME}.service" "${TARGET_DIR}/"
+    sudo cp "${SYSTEMD_DIR}/${SERVICE_NAME}.timer" "${TARGET_DIR}/"
+fi
 
 # Reload systemd
 if [ "$USER_MODE" = "--user" ]; then
     systemctl --user daemon-reload
-    sudo systemctl enable "${SERVICE_NAME}.timer"
-    sudo systemctl start "${SERVICE_NAME}.timer"
+    systemctl --user enable "${SERVICE_NAME}.timer"
+    systemctl --user start "${SERVICE_NAME}.timer"
     echo ""
     echo "Installed and started!"
     echo ""

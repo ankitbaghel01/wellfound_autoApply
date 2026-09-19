@@ -39,12 +39,12 @@
       'web developer', 'ai engineer', 'ai developer', 'ml engineer',
       'react', 'node', 'javascript', 'typescript', 'python', 'mobile',
       'react native', 'sde', 'member of technical staff',
-      'engineer', 'developer', 'programmer',
+      'engineer', 'developer', 'programmer', 'intern'
     ],
     // Skip jobs whose title contains any of these
     TITLE_BLOCKLIST: [
       'senior', 'principal', 'director', 'manager', 'lead', 'devops',
-      'data engineer', 'qa', 'test', 'intern', 'designer', 'sales', 'marketing',
+      'data engineer', 'qa', 'test', 'designer', 'sales', 'marketing',
       'teacher', 'trainer', 'tutor', 'instructor', 'coach',
       '.net', 'c#', 'php', 'ruby', 'golang', 'ios', 'android native', 'flutter',
     ],
@@ -617,7 +617,9 @@ ${CV.name}`;
       const cardText = row.textContent || '';
       const locMatch = cardText.match(/(remote only|on-?site|in office|hybrid|[^·•\n]{2,40}(?:India|Bangalore|Bengaluru|Hyderabad|Mumbai|Pune|Chennai|Delhi|Noida|Gurgaon|Gurugram|Kolkata|Ahmedabad|Jaipur|Lucknow|Chandigarh|Kochi|Coimbatore|Indore|Bhopal|Nagpur|Visakhapatnam|Vijayawada|Surat|Rajkot)[^·•\n]{0,20})/i);
       const location = locMatch ? locMatch[1].trim() : '';
-      rows.push({ href: a.href, title: cleanTitle(a.textContent), company, salary, location, linkEl: a });
+      const cleanedTitle = cleanTitle(a.textContent);
+      if (rows.length < 3) log(`  [debug-row] raw="${(a.textContent || '').trim().substring(0, 120)}" cleaned="${cleanedTitle}" href="${(a.getAttribute('href') || '').substring(0, 60)}"`);
+      rows.push({ href: a.href, title: cleanedTitle, company, salary, location, linkEl: a });
     }
     return rows;
   }
@@ -668,6 +670,13 @@ ${CV.name}`;
       // Diagnostics so failures are debuggable from the console output
       log(`(this page: ${allRows.length} job cards found, 0 match filters` +
         (allRows.length ? ` — sample: ${allRows.slice(0, 3).map((j) => `"${j.title}" [${j.location || 'no-loc'}]`).join(', ')}` : '') + ')');
+      // Debug: show why each card was rejected
+      for (const j of allRows.slice(0, 8)) {
+        const lower = j.title.toLowerCase();
+        const kwMatch = CONFIG.TITLE_KEYWORDS.filter((k) => lower.includes(k));
+        const blMatch = CONFIG.TITLE_BLOCKLIST.filter((k) => lower.includes(k));
+        log(`  [debug] "${j.title}" | loc="${j.location || ''}" | keywords=[${kwMatch}] blocklist=[${blMatch}] titleOk=${titleOk(j.title)} locOk=${locationOk(j.location)}`);
+      }
 
       // Try to load more results on this page first
       const more = findButtonByText(document, /load more|show more/i); // "next" is too generic — could hit a form's Next button

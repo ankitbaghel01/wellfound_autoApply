@@ -5,8 +5,8 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-WorkingDirectory=/run/media/jeet/New Volume/My-Projects/wellfound
-ExecStart=/run/media/jeet/New Volume/My-Projects/wellfound/scheduler.sh
+WorkingDirectory=/run/media/jeet/New\ Volume/My-Projects/wellfound
+ExecStart=/run/media/jeet/New\ Volume/My-Projects/wellfound/scheduler.sh
 TimeoutStartSec=7200
 Nice=10
 
