@@ -579,11 +579,12 @@ ${CV.name}`;
       !CONFIG.TITLE_BLOCKLIST.some((k) => lower.includes(k));
   };
 
-  // Accept if remote OR based in India
+  // Accept if remote, onsite (will verify in apply form), or based in India
   const locationOk = (loc) => {
     if (!loc) return true; // no location info → accept (will handle in apply form)
     const lower = loc.toLowerCase();
     if (/remote/i.test(lower)) return true;
+    if (/onsite|in office|hybrid/i.test(lower)) return true; // accept onsite/hybrid — apply form will gate by city
     return CONFIG.INDIA_LOCATIONS.some((city) => lower.includes(city));
   };
 
@@ -613,10 +614,16 @@ ${CV.name}`;
       const company = (row.querySelector('img[alt*="logo" i]')?.alt || '')
         .replace(/company logo/i, '').trim();
       const salary = (row.textContent.match(/(?:₹|\$|€)\s?[\d.,k]+\s?(?:[–-]\s?(?:₹|\$|€)?\s?[\d.,k]+)?k?/i) || [''])[0].trim();
-      // Extract location from card text (appears near title, before salary/posted info)
+      // Extract location from card text — try simple patterns first, then city fallback
       const cardText = row.textContent || '';
-      const locMatch = cardText.match(/(remote only|on-?site|in office|hybrid|[^·•\n]{2,40}(?:India|Bangalore|Bengaluru|Hyderabad|Mumbai|Pune|Chennai|Delhi|Noida|Gurgaon|Gurugram|Kolkata|Ahmedabad|Jaipur|Lucknow|Chandigarh|Kochi|Coimbatore|Indore|Bhopal|Nagpur|Visakhapatnam|Vijayawada|Surat|Rajkot)[^·•\n]{0,20})/i);
-      const location = locMatch ? locMatch[1].trim() : '';
+      let location = '';
+      const simpleLoc = cardText.match(/\b(remote only|on-?site or remote|on-?site|in office|hybrid)\b/i);
+      if (simpleLoc) {
+        location = simpleLoc[1];
+      } else {
+        const cityLoc = cardText.match(/\b(bangalore|bengaluru|hyderabad|mumbai|pune|chennai|delhi|noida|gurgaon|gurugram|kolkata|ahmedabad|jaipur|lucknow|chandigarh|kochi|coimbatore|indore|bhopal|nagpur|visakhapatnam|vijayawada|surat|rajkot|india)\b/i);
+        if (cityLoc) location = cityLoc[1];
+      }
       const cleanedTitle = cleanTitle(a.textContent);
       if (rows.length < 3) log(`  [debug-row] raw="${(a.textContent || '').trim().substring(0, 120)}" cleaned="${cleanedTitle}" href="${(a.getAttribute('href') || '').substring(0, 60)}"`);
       rows.push({ href: a.href, title: cleanedTitle, company, salary, location, linkEl: a });
