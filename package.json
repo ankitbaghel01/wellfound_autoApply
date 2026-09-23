@@ -1,15 +1,16 @@
 {
-  "name": "auto-apply",
+  "name": "wellfound-auto-apply",
   "version": "1.0.0",
-  "main": "naukri-profile-refresh.js",
+  "main": "auto-apply-runner.js",
   "scripts": {
-    "refresh": "node naukri-profile-refresh.js",
-    "login": "node naukri-profile-refresh.js login"
+    "start": "node auto-apply-runner.js wellfound --live",
+    "dry-run": "node auto-apply-runner.js wellfound",
+    "login": "node auto-apply-runner.js wellfound login"
   },
-  "keywords": ["naukri", "playwright", "automation"],
+  "keywords": ["wellfound", "playwright", "automation", "auto-apply"],
   "author": "",
   "license": "ISC",
-  "description": "Keeps your Naukri profile recently-updated by toggling the resume headline on a schedule",
+  "description": "Automatically applies to matching jobs on Wellfound using Playwright",
   "dependencies": {
     "playwright-core": "^1.61.1",
     "playwright-extra": "^4.3.6",

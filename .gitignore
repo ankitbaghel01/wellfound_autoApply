@@ -1,0 +1,7 @@
+node_modules
+.env
+apply-state-wellfound.json
+applications.csv
+.wellfound-chrome-profile
+auto-apply-scheduler.log
+auto-apply-wellfound.log
