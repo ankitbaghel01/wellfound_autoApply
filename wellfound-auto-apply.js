@@ -37,15 +37,19 @@
       'full stack', 'fullstack', 'full-stack', 'mern', 'backend', 'back end',
       'frontend', 'front end', 'software engineer', 'software developer',
       'web developer', 'ai engineer', 'ai developer', 'ml engineer',
-      'react', 'node', 'javascript', 'typescript', 'python', 'mobile',
-      'react native', 'sde', 'member of technical staff',
+      'machine learning', 'deep learning', 'ai/ml', 'ai ml', 'nlp', 'llm', 'genai', 'gen ai',
+      'generative ai', 'applied ai', 'computer vision', 'speech', 'data scientist',
+      'ai-assisted', 'ai assisted', 'ai-first', 'ai first', 'ai-native', 'ai native', 'vibe',
+      'prompt engineer', 'web dev', 'web engineer', 'web application', 'website developer',
+      'react', 'node', 'javascript', 'typescript', 'python', 'svelte',
+      'sde', 'member of technical staff',
     ],
     // Skip jobs whose title contains any of these
     TITLE_BLOCKLIST: [
-      'senior', 'principal', 'director', 'manager', 'lead', 'devops',
+      'senior', 'sr.', 'sr ', 'staff', 'principal', 'architect', 'head of', 'director', 'manager', 'lead', 'devops',
       'data engineer', 'qa', 'test', 'intern', 'designer', 'sales', 'marketing',
       'teacher', 'trainer', 'tutor', 'instructor', 'coach',
-      '.net', 'c#', 'php', 'ruby', 'golang', 'ios', 'android native', 'flutter',
+      '.net', 'c#', 'php', 'ruby', 'golang', 'ios', 'android native', 'flutter', 'react native',
     ],
   };
 
@@ -75,15 +79,13 @@
     [/why (do you want|are you interested|this role|this company|us|join)/i,
       `I ship production features end to end. ${CV.highlights[0] || ''}. This role matches my stack directly, and I want to keep building products with real ownership.`],
     [/tell (us|me) about yourself|introduce yourself|about you/i,
-      `I'm ${CV.name}, ${CV.currentRole}. ${CV.highlights[0] || ''}. Previously: ${CV.highlights[2] || ''}. ${CV.highlights[3] || ''}.`],
+      `I'm ${CV.name}, ${CV.currentRole}. ${[0, 2, 3].map((i) => CV.highlights[i]).filter(Boolean).map((h) => h + '.').join(' ')}`],
     [/(biggest|proudest|favorite) (project|achievement|accomplishment)|worked on/i,
-      `${CV.highlights[0] || ''}. I owned it end to end, from architecture through deployment and CI/CD.`],
-    [/react|frontend|front-end/i,
-      `Strong frontend experience: React.js, Next.js, Redux, TypeScript and Tailwind CSS, plus React Native for cross-platform mobile apps.`],
-    [/node|backend|back-end|api/i,
-      `I build production backends daily: Node.js/Express and Python/FastAPI, REST + GraphQL, WebSockets, MongoDB/PostgreSQL/Redis, on cloud with Docker and CI/CD.`],
-    [/\b(ai|llm|ml|machine learning|genai|langchain)\b/i,
-      `AI is a core focus: production GenAI agents, RAG pipelines, prompt engineering, tool calling, MCP and multi-agent systems.`],
+      `${CV.highlights[0] || ''}. I owned it end to end, from architecture through deployment.`],
+    // stack answers come from .env (ANSWER_FRONTEND/BACKEND/AI) so they never claim skills the CV doesn't have
+    [/react|frontend|front-end/i, CV.answerFrontend || `My stack: ${CV.skills}.`],
+    [/node|backend|back-end|api/i, CV.answerBackend || `My stack: ${CV.skills}.`],
+    [/\b(ai|llm|ml|machine learning|genai|langchain)\b/i, CV.answerAI || `My stack: ${CV.skills}.`],
     [/education|degree|university|college/i, CV.education],
     [/phone|contact number|mobile/i, CV.phone],
     [/e-?mail/i, CV.email],
@@ -106,7 +108,7 @@ I'd like to apply for the ${title || 'Full Stack Developer'} position at ${compa
 
 I'm currently ${CV.currentRole || 'a software developer'}, working daily with ${CV.skills.split(',').slice(0, 8).join(',').trim()}. A recent example of my work: ${CV.highlights[0] || 'shipping production features end to end'}.
 
-${CV.highlights[1] || ''}${CV.highlights[2] ? ' ' + CV.highlights[2] + '.' : ''}
+${[CV.highlights[1], CV.highlights[2]].filter(Boolean).map((h) => h + '.').join(' ')}
 
 I'm interested in this role because the ${title || 'Full Stack Developer'} role matches the stack I work in every day, and I'd get to own features end to end${company ? ' at ' + company : ''}. Happy to walk through any of the above if it's useful.
 
@@ -153,7 +155,9 @@ ${CV.name}`;
   function cleanTitle(raw) {
     return (raw || '')
       .replace(/\s+/g, ' ')
-      .split(/remote only|on-?site|hybrid|₹|\$\d|€|posted \d|recruiter|•|\d+\s?(?:weeks?|days?|months?|hours?)\s?ago/i)[0]
+      // card text glues the location onto the title ("Software Engineer - BackendRemoteIndia")
+      .replace(/(?<=[A-Za-z0-9)])(?=Remote|On-?site|Hybrid|In office)/, ' • ')
+      .split(/remote only|on-?site|hybrid|in office|₹|\$\d|€|posted \d|recruiter|•|\d+\s?(?:weeks?|days?|months?|hours?)\s?ago/i)[0]
       .replace(/\(?\s*remote\s*\)?$/i, '')
       .replace(/[\s\-–—|(,/]+$/g, '')
       .trim();
@@ -223,7 +227,7 @@ ${CV.name}`;
   const SELECTORS = {
     // job cards in the search results list — Wellfound uses div[data-test] attrs on job listings
     jobCards: '[data-test="StartupResult"] a[href*="/jobs/"], a[href^="/jobs/"][class]',
-    modal: '[role="dialog"], [class*="modal" i]',
+    modal: '[role="dialog"][aria-modal="true"], [role="dialog"]',
     applyButtonText: /^apply$|apply now/i,
     // 2026 UI: the submit button in the "Apply to <Company>" panel is labeled "Apply"
     sendButtonText: /^apply$|^send$|submit|send application/i,
@@ -232,22 +236,44 @@ ${CV.name}`;
 
   // ======================= APPLY TO ONE JOB (inside opened modal/pane) =======================
   async function fillAndSubmit(company, title) {
-    // several overlays match the modal selector — pick the one that IS the apply
-    // panel ("Apply to <Company>" + cover-letter textarea), not the page shell
-    const modal = await waitFor(() => {
-      const dialogs = [...document.querySelectorAll(SELECTORS.modal)];
-      return dialogs.find((d) => /apply to /i.test(d.textContent) && d.querySelector('textarea')) ||
-             dialogs.find((d) => /apply to /i.test(d.textContent)) || // panel with only radio/select questions, no cover-letter box
-             dialogs.find((d) => d.querySelector('textarea'));
+    // Scope = the "Apply to <Company>" panel only: the job dialog's <form> plus its header.
+    // NOT the whole dialog/page — <html> carries class "Modal__open", so a [class*=modal]
+    // match was the entire document: fills hit the search filters, and the first "Apply"
+    // found was a header button that only scrolls (phantom sends, 2026-11-04).
+    const found = await waitFor(() => {
+      const dialog = [...document.querySelectorAll(SELECTORS.modal)].filter(visible)
+        .find((d) => /apply to /i.test(d.textContent));
+      if (!dialog) return null;
+      const form = [...dialog.querySelectorAll('form')].filter(visible)
+        .find((f) => f.querySelector('[type="submit"], textarea'));
+      let panel = form;
+      while (panel && panel !== dialog && !/apply to /i.test(panel.textContent)) panel = panel.parentElement;
+      if (panel) return { dialog, panel };
+      return /not accepting applications/i.test(dialog.textContent) ? { dialog, panel: null } : null;
     });
-    // No apply modal → we're on a bare job page (full navigation, e.g. from a
-    // non-SPA search page). The page-level "Apply" button only OPENS the panel;
-    // clicking it and counting a "send" was creating phantom applications. Bail.
-    if (!modal) {
-      log('  ⚠ no apply modal found — skipping (not counting as sent)');
+    if (!found) {
+      log('  ⚠ no apply panel found — skipping (not counting as sent)');
       return false;
     }
-    const scope = modal;
+    if (!found.panel) {
+      log('  🚫 location-blocked by company — skipping');
+      return false;
+    }
+    const scope = found.panel;
+    // company from THIS panel's own "Apply to <Company>" header. A document-wide lookup hit a
+    // leftover "Apply to <previous company>" header and mis-addressed a cover letter (2026-11-04).
+    const header = (scope.innerText.match(/^\s*apply to (.{2,80}?)\s*$/im) || [])[1];
+    if (header) company = header.trim();
+    log(`  🏢 ${company || '?'} / ${title || '?'}`);
+
+    // Eligibility: Wellfound warns in the panel when the profile is outside the role's
+    // preferred experience ("outside the years of experience preferred … (2+ years …)").
+    // Only apply where eligible — skip those.
+    const notEligible = scope.innerText.match(/outside the (?:years of experience|experience)[^\n]*/i);
+    if (notEligible) {
+      log(`  🚫 not eligible — ${notEligible[0].slice(0, 110)}`);
+      return false;
+    }
 
     // Location-gated job ("X is not accepting applications from your current location…")
     // → Send is disabled, nothing we fill changes that. Skip immediately.
@@ -262,7 +288,7 @@ ${CV.name}`;
     const textareas = [...scope.querySelectorAll('textarea')].filter(visible);
     if (textareas.length) {
       setValue(textareas[0], coverLetter(company, title));
-      log('  ✍ cover letter filled');
+      log(`  ✍ cover letter filled (to: ${company || 'Hiring Manager'} / ${title || '?'})`);
     }
 
     // 2. Any extra question textareas/inputs — find their label text and answer from CV
@@ -305,9 +331,13 @@ ${CV.name}`;
           combo.focus();
           combo.click();
           await sleep(600);
-          // options render in a portal, so search the whole document
+          // options may render in a portal — but only ever take THIS combobox's listbox (aria-controls /
+          // aria-owns) or options inside the panel. A document-wide search clicked the search
+          // filter's "No remote jobs" option instead (2026-11-04).
+          const listId = combo.getAttribute('aria-controls') || combo.getAttribute('aria-owns');
+          const listbox = listId && document.getElementById(listId);
           const opt = await waitFor(
-            () => [...document.querySelectorAll('[role="option"], [id*="option" i], [class*="option" i]')].find(visible),
+            () => [...(listbox || scope).querySelectorAll('[role="option"]')].find(visible),
             3000
           );
           if (opt) { opt.click(); log(`  📍 location: ${opt.textContent.trim().slice(0, 40)}`); }
@@ -324,6 +354,14 @@ ${CV.name}`;
         }
         await sleep(500);
       }
+    }
+
+    // 3a'. The "What interests you…" box can render only AFTER the relocate choice — fill it now if
+    // it's still empty (an application went out with no cover letter this way, 2026-11-04).
+    const lateTa = !textareas.length && [...scope.querySelectorAll('textarea')].filter(visible).find((t) => !t.value.trim());
+    if (lateTa) {
+      setValue(lateTa, coverLetter(company, title));
+      log(`  ✍ cover letter filled (to: ${company || 'Hiring Manager'} / ${title || '?'})`);
     }
 
     // 3b. Dropdowns / radios / checkboxes — relocation, work-auth, location pickers etc.
@@ -352,8 +390,19 @@ ${CV.name}`;
     for (const group of Object.values(radioGroups)) {
       const groupCtx = (group[0].closest('fieldset')?.textContent || group.map((r) => labelTextOf(r)).join(' ')).slice(0, 200);
       let pick = null;
+      // work-authorization radios: a blind "Yes" would claim e.g. US work rights the CV
+      // doesn't have — only answer for India, otherwise skip the job rather than lie
+      if (/authori[sz]ed to work|work authori[sz]ation|sponsor|visa|citizen|right to work/i.test(groupCtx) && !/india/i.test(groupCtx)) {
+        log(`  🚫 work-authorization question outside India — skipping job: "${groupCtx.slice(0, 60)}"`);
+        findButtonByText(scope, /close|cancel|×/i)?.click();
+        scope.querySelector('[aria-label="Close"]')?.click();
+        return false;
+      }
       if (/gender|^sex\b/i.test(groupCtx)) {
-        pick = group.find((r) => { const l = labelTextOf(r); return /male/i.test(l) && !/female/i.test(l); });
+        const g = (CV.gender || '').trim().toLowerCase();
+        pick = (g && group.find((r) => labelTextOf(r).trim().toLowerCase() === g)) ||
+               group.find((r) => /prefer not|decline|rather not/i.test(labelTextOf(r)));
+        if (!pick) continue; // never guess a gender
       } else if (/disability|disabled/i.test(groupCtx)) {
         pick = group.find((r) => /no disability|not disabled|^no\b|none/i.test(labelTextOf(r)));
       }
@@ -379,7 +428,8 @@ ${CV.name}`;
     }
 
     // 4. Send — poll for it, the modal sometimes renders the button late
-    const sendBtn = await waitFor(() => findButtonByText(scope, SELECTORS.sendButtonText), 12000);
+    const sendBtn = await waitFor(() =>
+      [...scope.querySelectorAll('form [type="submit"]')].find(visible) || findButtonByText(scope, SELECTORS.sendButtonText), 12000);
     if (!sendBtn) {
       // tell "button exists but disabled" (blocked application) apart from "selector miss"
       const disabledBtn = [...scope.querySelectorAll('button, [type="submit"]')]
@@ -398,14 +448,32 @@ ${CV.name}`;
       scope.querySelector('[aria-label="Close"]')?.click();
       return true;
     }
+    const form = sendBtn.closest('form');
     sendBtn.click();
+    // count it only when Wellfound reacts: the form goes away or the button flips to "Applied".
+    // A form still sitting there = validation error or a no-op click → not sent.
+    const confirmed = await waitFor(() =>
+      (form && !form.isConnected) || !sendBtn.isConnected || /applied|sent|submitted/i.test(sendBtn.textContent) ||
+      /application (sent|submitted)|you(?:'|’)ve applied|applied on/i.test(found.dialog.innerText), 15000);
+    if (!confirmed) {
+      log('  ⚠ clicked Apply but Wellfound did not confirm — not counting');
+      return false;
+    }
     log('  ✅ application sent');
     return true;
   }
 
   // ======================= MAIN LOOP =======================
+  // skip jobs whose listed INR range tops out below the bottom of EXPECTED_CTC ("6-10" → 6 LPA)
+  const MIN_LPA = parseFloat(CV.expectedCTC) || 0;
+  const payOk = (j) => !(MIN_LPA && j.maxLpa != null && j.maxLpa < MIN_LPA);
+
   const titleOk = (t) => {
     const lower = t.toLowerCase();
+    // titles that state their own bar: "7+ Years", "3-5 yrs", "Equity Only", "unpaid"
+    const yrs = lower.match(/(\d+)\s*\+?\s*(?:-\s*\d+\s*)?(?:years?|yrs?)\b/);
+    if (yrs && +yrs[1] >= 2) return false;
+    if (/equity[- ]only|unpaid|no salary/.test(lower)) return false;
     return CONFIG.TITLE_KEYWORDS.some((k) => lower.includes(k)) &&
            !CONFIG.TITLE_BLOCKLIST.some((k) => lower.includes(k));
   };
@@ -436,7 +504,10 @@ ${CV.name}`;
       const company = (row.querySelector('img[alt*="logo" i]')?.alt || '')
         .replace(/company logo/i, '').trim();
       const salary = (row.textContent.match(/(?:₹|\$|€)\s?[\d.,k]+\s?(?:[–-]\s?(?:₹|\$|€)?\s?[\d.,k]+)?k?/i) || [''])[0].trim();
-      rows.push({ href: a.href, title: cleanTitle(a.textContent), company, salary, linkEl: a });
+      // top of an INR range in lakhs ("₹4L – ₹6L" → 6); null when not listed in INR
+      const inr = row.textContent.match(/₹\s?([\d.]+)\s?L(?:\s?[–-]\s?₹\s?([\d.]+)\s?L)?/i);
+      const maxLpa = inr ? +(inr[2] || inr[1]) : null;
+      rows.push({ href: a.href, title: cleanTitle(a.textContent), company, salary, maxLpa, linkEl: a });
     }
     return rows;
   }
@@ -481,7 +552,7 @@ ${CV.name}`;
 
   while (applied < CONFIG.MAX_APPLICATIONS) {
     const allRows = findJobRows();
-    const jobs = allRows.filter((j) => !seen.has(j.href) && titleOk(j.title));
+    const jobs = allRows.filter((j) => !seen.has(j.href) && titleOk(j.title) && payOk(j));
 
     if (!jobs.length) {
       // Diagnostics so failures are debuggable from the console output
@@ -492,13 +563,17 @@ ${CV.name}`;
       const more = findButtonByText(document, /load more|show more/i); // "next" is too generic — could hit a form's Next button
       if (more) { more.click(); await sleep(3000); continue; }
       // infinite-scroll feed: keep scrolling — new cards load in batches
+      const cardCount = () => [...document.querySelectorAll('a[href*="/jobs/"]')].filter((a) => /\/jobs\/\d/.test(a.getAttribute('href') || '')).length;
+      const cardsBefore = cardCount();
       let grew = false;
       for (let s = 0; s < 6 && !grew; s++) {
         window.scrollTo(0, document.body.scrollHeight);
         await sleep(3000);
-        grew = findJobRows().some((j) => !seen.has(j.href) && titleOk(j.title));
+        grew = findJobRows().some((j) => !seen.has(j.href) && titleOk(j.title) && payOk(j));
       }
       if (grew) continue;
+      // feed still delivering cards (just none matching yet) → keep going; only stop once it stops growing
+      if (cardCount() > cardsBefore) continue;
 
       // Page exhausted → search globally across role pages
       if (await goToNextSearchPage()) continue;
@@ -524,7 +599,8 @@ ${CV.name}`;
     (document.querySelector('button[aria-label="Close" i], [class*="Modal" i] button[class*="close" i]') ||
       findButtonByText(document, /^×$|^✕$/))?.click();
     await sleep(1000);
-    await humanDelay();
+    // full human pace only after a real send; a skipped job (already applied, blocked) just needs a short beat
+    if (ok) await humanDelay(); else await sleep(5000 + Math.random() * 7000);
   }
 
   log(`Finished. ${CONFIG.DRY_RUN ? 'DRY RUN — nothing was actually sent. Set CONFIG.DRY_RUN = false and re-run to apply for real.' : `Applied to ${applied} jobs.`}`);
