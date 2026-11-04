@@ -75,9 +75,19 @@ Chrome opens on the jobs feed, and you'll see forms being filled. The log
 node auto-apply-runner.js wellfound --live
 ```
 
-Same flow, but Send is actually clicked. Each application is appended to
+Same flow, but Send is actually clicked. An application only counts once Wellfound
+confirms it (the form closes or the button flips to "Applied"). Each one is appended to
 `applications.csv` (Date, Site, Role, Company, Salary, Skills, Job Link, JD) and
-counted in `apply-state-wellfound.json` toward the daily cap.
+counted in `apply-state-wellfound.json` toward the daily cap. Wellfound holds new
+applications as "Scheduled" for ~5 minutes — they can be undone from the Applied tab.
+
+Runner flags:
+
+| Flag | What it does |
+|---|---|
+| `--live` | Actually submit (default is dry run) |
+| `--show` | Keep the Chrome window on-screen so you can watch (default runs off-screen) |
+| `--max=N` | Stop after N applications this run — e.g. `--max=1` for a test send |
 
 ## Customizing which jobs it applies to
 
@@ -88,7 +98,19 @@ Edit the `CONFIG` block at the top of `wellfound-auto-apply.js`:
 | `TITLE_KEYWORDS` | Apply only when the job title contains one of these (case-insensitive) |
 | `TITLE_BLOCKLIST` | Skip when the title contains any of these (senior, manager, .net, …) |
 | `MAX_APPLICATIONS` | Per-run cap (the runner overrides it with the daily cap remaining) |
-| `MIN_DELAY_MS` / `MAX_DELAY_MS` | Wait between applications (default 60–150 s — human pace; going faster trips Wellfound's bot-check) |
+| `MIN_DELAY_MS` / `MAX_DELAY_MS` | Wait between applications (default 60–150 s — human pace; going faster trips Wellfound's bot-check). Skipped jobs only wait 5–12 s |
+
+Built-in filters (no config needed):
+
+- **Eligibility** — jobs where Wellfound's apply panel warns you're *outside the years of
+  experience preferred* are skipped, as are titles stating 2+ years, "equity only" or "unpaid".
+- **Salary floor** — jobs whose listed INR range tops out below the low end of `EXPECTED_CTC`
+  (e.g. `6-10` → 6 LPA) are skipped. Jobs with no listed salary are still applied to.
+- **Work authorization** — radio questions about sponsorship/authorization outside India are
+  never guessed; the job is skipped instead.
+- **Stack answers** — "experience with React / backend / AI?" questions are answered from
+  `ANSWER_FRONTEND`, `ANSWER_BACKEND` and `ANSWER_AI` in `.env`, so no skills are claimed
+  that aren't yours.
 
 **Locations:** the script applies to whatever your Wellfound search filters show on
 `wellfound.com/jobs` — set your filters (remote / worldwide / a city) once in the

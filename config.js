@@ -51,10 +51,14 @@ const CV = {
   linkedin: g('LINKEDIN_URL'),
   portfolio: g('PORTFOLIO_URL'),
   links: `GitHub: ${g('GITHUB_URL')} | LinkedIn: ${g('LINKEDIN_URL')} | Portfolio: ${g('PORTFOLIO_URL')}`,
+  // stack answers for "experience with React / backend / AI?" questions
+  answerFrontend: g('ANSWER_FRONTEND'),
+  answerBackend: g('ANSWER_BACKEND'),
+  answerAI: g('ANSWER_AI'),
   // derived sentences
   remoteOk: 'Yes, I am fully set up for remote work and also open to hybrid/onsite.',
   relocate: `Yes, I am open to relocation. I am currently based in ${g('LOCATION')}.`,
-  startDate: `I can start within ${g('NOTICE_PERIOD')}.`,
+  startDate: /immediate/i.test(g('NOTICE_PERIOD')) ? 'I can join immediately.' : `I can start within ${g('NOTICE_PERIOD')}.`,
 };
 
 const CREDS = { email: g('GOOGLE_EMAIL') || g('EMAIL'), password: g('GOOGLE_PASSWORD') };

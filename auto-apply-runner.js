@@ -33,6 +33,8 @@ process.on('uncaughtException', (e) => console.log(`[${new Date().toLocaleString
 const SITE_ARG = process.argv[2];
 const LOGIN_MODE = process.argv.includes('login');
 const LIVE = process.argv.includes('--live');
+const SHOW = process.argv.includes('--show'); // keep the Chrome window on-screen to watch it work
+const MAX_ARG = +((process.argv.find((a) => /^--max=\d+$/.test(a)) || '').split('=')[1]) || Infinity; // e.g. --max=1 for a test send
 
 const SITES = {
   indeed: {
@@ -100,7 +102,7 @@ const todayKey = new Date().toDateString();
 let dayState = { date: todayKey, count: 0 };
 try { const s = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8').replace(/^﻿/, '')); if (s.date === todayKey) dayState = s; } catch (e) {}
 const bumpDayCount = () => { dayState.count++; try { fs.writeFileSync(STATE_FILE, JSON.stringify(dayState)); } catch (e) {} };
-const TARGET = DAILY_CAP - dayState.count;
+const TARGET = Math.min(DAILY_CAP - dayState.count, MAX_ARG);
 const MAX_RUNTIME_MS = 100 * 60 * 1000;
 const IDLE_ROTATE_MS = 4 * 60 * 1000;
 
@@ -156,7 +158,8 @@ function buildInjection() {
       '--disable-backgrounding-occluded-windows', // keep timers full-speed while off-screen
       '--disable-renderer-backgrounding',
       '--disable-popup-blocking', // naukri script opens each job in a popup it controls
-      ...(LOGIN_MODE ? [] : ['--window-position=-32000,-32000']),
+      // explicit on-screen position: the profile remembers the last (off-screen) placement otherwise
+      (LOGIN_MODE || SHOW ? '--window-position=40,40' : '--window-position=-32000,-32000'),
     ],
   });
   const mainPage = ctx.pages()[0] || (await ctx.newPage());
@@ -188,18 +191,23 @@ function buildInjection() {
       log('  ' + clean.slice(0, 160));
 
       // snapshot the wizard whenever it can't proceed, so the blocking field is visible
-      if (/no Continue\/Submit button found|no Send button found/.test(clean)) {
+      if (/no Continue\/Submit button found|no Send button found|did not confirm/.test(clean)) {
         page.screenshot({ path: path.join(__dirname, `blocked-step-${SITE_ARG}.png`) }).catch(() => {});
       }
 
       // "▶ Applying: <title> @ <company>" (wellfound) / "▶ Opening: <title>" (indeed)
       const m = clean.match(/▶ (?:Applying|Opening): (.+)/);
       if (m) {
-        const [main, link, cardSalary] = m[1].split(' | ');
+        // titles can contain " | " themselves ("Full Stack Engineer | NodeJS | Mumbai") — anchor on the URL
+        const parts = m[1].split(' | ');
+        const li = parts.findIndex((p) => /^https?:\/\//.test(p.trim()));
+        const main = li > 0 ? parts.slice(0, li).join(' | ') : parts[0];
+        const link = li >= 0 ? parts[li] : '';
+        const cardSalary = li >= 0 ? parts.slice(li + 1).join(' ') : '';
         const atParts = main.split(' @ ');
         const company = atParts.length > 1 ? atParts.pop() : ''; // company is after the LAST ' @ ' — titles may contain '@'
         const title = atParts.join(' @ ');
-        pendingJob = { title: title.trim(), company: (company || '').replace(/^\?$/, '').trim(), link: (link || '').trim(), salary: (cardSalary || '').trim(), skills: '', jd: '' };
+        pendingJob = { title: title.trim(), company: (company || '').replace(/^\?$/, '').trim(), link: (link || '').replace(/\s*\|\s*$/, '').trim(), salary: (cardSalary || '').trim(), skills: '', jd: '' };
         // scrape details once the job pane/description has rendered
         setTimeout(() => {
           page.evaluate(() => {
@@ -220,6 +228,10 @@ function buildInjection() {
           }).catch(() => {});
         }, SITE_ARG === 'indeed' ? 6000 : 2000); // indeed pane loads slower; wellfound modal closes fast
       }
+
+      // the apply script logs who the cover letter went to — the cleanest company name we get
+      const to = clean.match(/(?:cover letter filled \(to:|🏢) (.+?) \/ /);
+      if (to && pendingJob && to[1] !== 'Hiring Manager') pendingJob.company = to[1];
 
       if (site.submittedRe.test(text)) {
         submitted++;
